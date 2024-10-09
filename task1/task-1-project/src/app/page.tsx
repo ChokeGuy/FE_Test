@@ -21,9 +21,6 @@ export default function Home() {
 
   const columns: GridColDef[] = filterData.length
     ? Object.keys(filterData[0] as object).map((key) => {
-        if (key === "id") {
-          return { field: key, headerName: key, width: 180, hide: true }; // Ẩn cột ID
-        }
         return {
           field: key,
           headerName: key,
