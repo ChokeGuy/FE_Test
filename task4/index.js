@@ -9,28 +9,32 @@ async function processData() {
     const data = await response.json();
     const { token, data: inputData, query } = data;
 
-    const evenPrefixSums = [];
-    const oddPrefixSums = [];
-    let evenSum = 0;
-    let oddSum = 0;
+    const evenPosPrefixSums = [];
+    const oddPosPrefixSums = [];
+    let evenPosSum = 0;
+    let oddPosSum = 0;
 
-    for (let value of inputData) {
-      if (value % 2 === 0) evenSum += value;
-      else oddSum += value;
-      evenPrefixSums.push(evenSum);
-      oddPrefixSums.push(oddSum);
+    for (let index in inputData) {
+      if (index % 2 === 0) evenPosSum += inputData[index];
+      else oddPosSum += inputData[index];
+      evenPosPrefixSums.push(evenPosSum);
+      oddPosPrefixSums.push(oddPosSum);
     }
 
     const results = query.map(({ type, range: [l, r] }) => {
-      let totalEvenSum = evenPrefixSums[r];
-      let totalOddSum = oddPrefixSums[r];
+      let totalEvenSum = evenPosPrefixSums[r];
+      let totalOddSum = oddPosPrefixSums[r];
       if (l > 0) {
-        totalEvenSum -= evenPrefixSums[l - 1];
-        totalOddSum -= oddPrefixSums[l - 1];
+        totalEvenSum -= evenPosPrefixSums[l - 1];
+        totalOddSum -= oddPosPrefixSums[l - 1];
       }
 
       if (type === "1") return totalEvenSum + totalOddSum;
-      if (type === "2") return totalEvenSum - totalOddSum;
+      if (type === "2") {
+        return l % 2 === 0
+          ? totalEvenSum - totalOddSum
+          : totalOddSum - totalEvenSum;
+      }
     });
 
     const outputResponse = await fetch(
